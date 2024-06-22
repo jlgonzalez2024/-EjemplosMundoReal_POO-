@@ -1,0 +1,114 @@
+class Book:
+    def __init__(self, title, author, ISBN, available=True):
+        self.title = title
+        self.author = author
+        self.ISBN = ISBN
+        self.available = available
+    
+    def check_availability(self):
+        return self.available
+    
+    def borrow_book(self):
+        if self.available:
+            self.available = False
+            print(f"El libro '{self.title}' ha sido prestado.")
+        else:
+            print(f"El libro '{self.title}' no está disponible en este momento.")
+    
+    def return_book(self):
+        if not self.available:
+            self.available = True
+            print(f"El libro '{self.title}' ha sido devuelto.")
+        else:
+            print(f"El libro '{self.title}' ya está disponible.")
+
+class User:
+    def __init__(self, name, email):
+        self.name = name
+        self.email = email
+        self.borrowed_books = []
+    
+    def borrow(self, book):
+        if book.check_availability():
+            self.borrowed_books.append(book)
+            book.borrow_book()
+        else:
+            print("Lo siento, este libro no está disponible para préstamo en este momento.")
+    
+    def return_book(self, book):
+        if book in self.borrowed_books:
+            self.borrowed_books.remove(book)
+            book.return_book()
+        else:
+            print("Este libro no está en tu lista de libros prestados.")
+
+class Library:
+    def __init__(self, name, location):
+        self.name = name
+        self.location = location
+        self.books = []
+    
+    def add_book(self, book):
+        self.books.append(book)
+        print(f"Se ha añadido el libro '{book.title}' al catálogo de la biblioteca.")
+    
+    def display_books(self):
+        print(f"Libros disponibles en la biblioteca '{self.name}':")
+        for book in self.books:
+            if book.check_availability():
+                print(f"- {book.title} by {book.author}")
+    
+    def search_book_by_title(self, title):
+        for book in self.books:
+            if book.title.lower() == title.lower():
+                return book
+        return None
+    
+    def search_book_by_author(self, author):
+        books_by_author = []
+        for book in self.books:
+            if book.author.lower() == author.lower():
+                books_by_author.append(book)
+        return books_by_author if books_by_author else None
+
+
+# Ejemplo de uso del sistema:
+
+# Crear libros
+book1 = Book("El señor de los anillos", "J.R.R. Tolkien", "9788499890950")
+book2 = Book("Harry Potter y la piedra filosofal", "J.K. Rowling", "9788478884451")
+book3 = Book("Cien años de soledad", "Gabriel García Márquez", "9788420471839")
+
+# Crear usuarios
+user1 = User("Alice", "alice@example.com")
+user2 = User("Bob", "bob@example.com")
+
+# Crear biblioteca
+library = Library("Biblioteca Central", "Calle Principal, 123")
+
+# Añadir libros a la biblioteca
+library.add_book(book1)
+library.add_book(book2)
+library.add_book(book3)
+
+# Mostrar libros disponibles
+library.display_books()
+
+# Alice toma prestado un libro
+user1.borrow(book1)
+
+# Bob intenta tomar prestado el mismo libro
+user2.borrow(book1)
+
+# Bob busca un libro por autor
+books_by_gabriel = library.search_book_by_author("Gabriel García Márquez")
+if books_by_gabriel:
+    print(f"Libros de Gabriel García Márquez encontrados en la biblioteca:")
+    for book in books_by_gabriel:
+        print(f"- {book.title}")
+
+# Alice devuelve el libro
+user1.return_book(book1)
+
+# Mostrar libros disponibles después de la devolución
+library.display_books()
